@@ -121,7 +121,7 @@ async function sendLapTime(number) {
   try {
     const response = await axios.post(
       "https://api.mxbtiming.com/api/laptimes",
-      bestLapCache[number],
+      { ...bestLapCache[number], ...eventCache },
       {
         headers: {
           Authorization: `Bearer ${process.env.API_KEY}`,
