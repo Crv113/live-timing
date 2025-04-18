@@ -113,26 +113,15 @@ async function sendLapTime(number) {
     "Send Api: " +
       number +
       " | newBestLap: " +
-      formatLapTime(bestLapCache[number].lapTime)
+      formatLapTime(bestLapCache[number].lap_time)
   );
 
-  const payload = {
-    event_name: "MXGP Portugal",
-    track_name: "Agueda",
-    lap_time: "55500",
-    lap_time_sector_1: "20000",
-    lap_time_sector_2: "15500",
-    average_speed: "65",
-    bike_name: "Honda CRF450",
-    category_name: "MX1",
-    player_guid: "GUID-PLAYER-1234",
-    player_name: "Tim Gajser",
-  };
+  console.log(bestLapCache[number]);
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/laptimes",
-      payload,
+      "https://api.mxbtiming.com/api/laptimes",
+      bestLapCache[number],
       {
         headers: {
           Authorization: `Bearer ${process.env.API_KEY}`,
@@ -145,7 +134,6 @@ async function sendLapTime(number) {
     console.error("❌ [Erreur envoi LapTime]");
     if (error.response) {
       console.error("Status:", error.response.status);
-      console.error("Erreur:", error.response.data);
     } else {
       console.error("Erreur:", error.message);
     }
@@ -195,8 +183,8 @@ function processData(data) {
 
         if (bestLapCache[number]) {
           if (
-            bestLapCache[number].lapTime === undefined ||
-            lapTime < bestLapCache[number].lapTime
+            bestLapCache[number].lap_time === undefined ||
+            lapTime < bestLapCache[number].lap_time
           ) {
             bestLapCache[number].lap_time = lapTime;
             bestLapCache[number].lap_time_sector_1 = block[5];
