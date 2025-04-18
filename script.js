@@ -134,6 +134,7 @@ async function sendLapTime(number) {
     console.error("❌ [Erreur envoi LapTime]");
     if (error.response) {
       console.error("Status:", error.response.status);
+      console.error("Erreur:", error.response.data);
     } else {
       console.error("Erreur:", error.message);
     }
