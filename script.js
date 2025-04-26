@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { customLog } = require("./utils/CustomLog");
+const { gracefulShutdown } = require("./utils/gracefulShutdown");
 
 const axios = require("axios");
 const fs = require("fs");
