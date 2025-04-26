@@ -1,4 +1,6 @@
 require("dotenv").config();
+const { customLog } = require("./utils/CustomLog");
+
 const axios = require("axios");
 const fs = require("fs");
 const dgram = require("dgram");
@@ -40,11 +42,11 @@ if (IS_LOCAL) {
     if (!isConnected) {
       if (firstLine === "OK") {
         isConnected = true;
-        console.log("✅ Connecté au serveur, envoi de START...");
+        customLog("✅ Connecté au serveur, envoi de START...");
         send("START\n0\n0");
 
         keepAliveInterval = setInterval(() => {
-          console.log("KEEPALIVE");
+          customLog("KEEPALIVE");
           send("KEEPALIVE");
         }, 15000);
       } else {
@@ -67,7 +69,7 @@ if (IS_LOCAL) {
   });
 
   process.on("SIGINT", () => {
-    console.log("\n🛑 Déconnexion propre...");
+    customLog("\n🛑 Déconnexion propre...");
     clearInterval(keepAliveInterval);
 
     try {
@@ -78,12 +80,12 @@ if (IS_LOCAL) {
 
     setTimeout(() => {
       client.close();
-      console.log("✅ Socket fermé.");
+      customLog("✅ Socket fermé.");
       process.exit(0);
     }, 200);
   });
 
-  console.log("🔌 Tentative de connexion...");
+  customLog("🔌 Tentative de connexion...");
   send(`CONNECT\n${PASSWORD}`);
 }
 
@@ -109,14 +111,18 @@ function splitDataIntoBlocks(data) {
 }
 
 async function sendLapTime(number) {
-  console.log(
+  if (bestLapCache[number].lap_time <= 0) {
+    return;
+  }
+
+  customLog(
     "Send Api: " +
       number +
       " | newBestLap: " +
       formatLapTime(bestLapCache[number].lap_time)
   );
 
-  console.log(bestLapCache[number]);
+  customLog(bestLapCache[number]);
 
   try {
     const response = await axios.post(
@@ -128,8 +134,8 @@ async function sendLapTime(number) {
         },
       }
     );
-    console.log("✅ [LapTime enregistré]");
-    console.log(response.data);
+    customLog("✅ [LapTime enregistré]");
+    customLog(response.data);
   } catch (error) {
     console.error("❌ [Erreur envoi LapTime]");
     if (error.response) {
@@ -160,7 +166,7 @@ function processData(data) {
           eventCache.event_name = eventName;
           eventCache.track_name = trackName;
           eventCache.track_length = trackLength;
-          console.log(eventCache);
+          customLog(eventCache);
         }
         break;
 
@@ -210,7 +216,7 @@ function processData(data) {
             parseInt(lapTime) < parseInt(bestLapCache[number].lap_time));
 
         if (!isBetterLap) {
-          console.log("newLap for " + number + " but not enough: " + lapTime);
+          customLog("newLap for " + number + " but not enough: " + lapTime);
         }
 
         if (isValidLap && isBetterLap) {
