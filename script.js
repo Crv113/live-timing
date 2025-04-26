@@ -22,6 +22,7 @@ if (IS_LOCAL) {
   const PASSWORD = "mxbTimingLiveClient";
 
   const client = dgram.createSocket("udp4");
+  gracefulShutdown(socket);
   let isConnected = false;
   let keepAliveInterval;
 
