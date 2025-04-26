@@ -26,3 +26,7 @@ function gracefulShutdown(socket) {
     socketClosed = true;
   });
 }
+
+module.exports = {
+  gracefulShutdown,
+};
