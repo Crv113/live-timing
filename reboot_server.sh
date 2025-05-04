@@ -33,13 +33,18 @@ log "🔄 Arrêt du serveur MXBikes..."
 MXB_PID=$(pgrep -f "mxbikes.exe.*-dedicated $SERVER_PORT")
 
 if [ -n "$MXB_PID" ]; then
-    log "🛑 Serveur MXBikes trouvé avec PID $MXB_PID. Arrêt..."
-    kill "$MXB_PID"
-    sleep 5
-    if ps -p "$MXB_PID" > /dev/null; then
-        log "⚠️ Serveur toujours actif, tentative de kill forcé..."
-        kill -9 "$MXB_PID"
-    fi
+    echo "🛑 Serveur MXBikes trouvé avec PID(s) :"
+    echo "$MXB_PID"
+
+    while IFS= read -r pid; do
+        log "🔪 kill $pid"
+        kill "$pid"
+        sleep 1
+        if ps -p "$pid" > /dev/null; then
+            log "⚠️ PID $pid toujours actif, kill -9..."
+            kill -9 "$pid"
+        fi
+    done <<< "$MXB_PID"
 else
     log "✅ Aucun serveur MXBikes en cours."
 fi
