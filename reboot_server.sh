@@ -4,7 +4,7 @@ log() {
 }
 
 # Chemins (à adapter si besoin)
-LIVETIMING_DIR="$HOME/Documents/livetiming"
+LIVETIMING_DIR="$HOME/Documents/live-timing"
 SERVER_DIR="$HOME/Documents/server1"
 MXB_SERVER_EXE="$HOME/mxbserver/mxbikes.exe"
 SERVER_PORT=54213
