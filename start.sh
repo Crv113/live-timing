@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "Starting script.js..."
+echo "Starting livetiming.js..."
 
-nohup node script.js > script.log 2>&1 &
-echo $! > script.pid
+nohup node livetiming.js > livetiming.log 2>&1 &
+echo $! > livetiming.pid
 
-echo "Started with PID $(cat script.pid)"
+echo "Started with PID $(cat livetiming.pid)"

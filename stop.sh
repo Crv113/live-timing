@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ -f script.pid ]; then
-    PID=$(cat script.pid)
-    echo "Stopping script.js with PID $PID..."
+if [ -f livetiming.pid ]; then
+    PID=$(cat livetiming.pid)
+    echo "Stopping livetiming.js with PID $PID..."
     kill -SIGTERM $PID
-    rm script.pid
+    rm livetiming.pid
     echo "Stopped."
 else
-    echo "No script.pid file found. Is the script running?"
+    echo "No livetiming.pid file found. Is the livetiming running?"
 fi
