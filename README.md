@@ -21,10 +21,3 @@ This service acts as a bridge between the game and the Laravel backend, making l
 
 - **NodeJs**
 - **UDP (dgram module)**
-- **Axios (API communication)**
-- **React Hook Form**
-- **TanStack Query**
-- **Axios**
-- **Discord OAuth2**
-- **Docker**
-
