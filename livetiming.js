@@ -11,6 +11,7 @@ const allowedTypes = ["ENTRY", "LAP", "BESTLAP"];
 
 const bestLapCache = {};
 const eventCache = {};
+let playersOnlineCount = 0;
 
 if (IS_LOCAL) {
   // === Mode LOCAL : lecture depuis fichier ===
@@ -50,6 +51,7 @@ if (IS_LOCAL) {
         keepAliveInterval = setInterval(() => {
           customLog("KEEPALIVE");
           send("KEEPALIVE");
+          sendServerStatus(playersOnlineCount);
         }, 15000);
       } else {
         console.error("❌ Connexion échouée :", firstLine);
@@ -149,6 +151,32 @@ async function sendLapTime(number) {
   }
 }
 
+async function sendServerStatus(count) {
+  customLog("Send Api: players_online: " + count);
+
+  try {
+    const response = await axios.post(
+      "https://api.mxbtiming.com/api/server-status",
+      { players_online: count },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.API_KEY}`,
+        },
+      },
+    );
+    customLog("✅ [ServerStatus enregistré]");
+    customLog(response.data);
+  } catch (error) {
+    console.error("❌ [Erreur envoi ServerStatus]");
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Erreur:", error.response.data);
+    } else {
+      console.error("Erreur:", error.message);
+    }
+  }
+}
+
 function processData(data) {
   const blocks = splitDataIntoBlocks(data);
 
@@ -183,6 +211,18 @@ function processData(data) {
             bike_name: block[3],
             category_name: block[5],
           };
+
+          playersOnlineCount++;
+          sendServerStatus(playersOnlineCount);
+        }
+        break;
+
+      case "ENTRYREMOVE":
+        number = block[1];
+
+        if (bestLapCache[number]) {
+          playersOnlineCount = Math.max(0, playersOnlineCount - 1);
+          sendServerStatus(playersOnlineCount);
         }
         break;
 
