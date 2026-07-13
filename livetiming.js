@@ -20,7 +20,7 @@ if (IS_LOCAL) {
 } else {
   const SERVER_IP = "127.0.0.1";
   const SERVER_PORT = 54220;
-  const PASSWORD = "mxbTimingLiveClient";
+  const PASSWORD = process.env.SERVER_PASSWORD;
 
   const client = dgram.createSocket("udp4");
   gracefulShutdown(client);
@@ -121,7 +121,7 @@ async function sendLapTime(number) {
     "Send Api: " +
       number +
       " | newBestLap: " +
-      formatLapTime(bestLapCache[number].lap_time)
+      formatLapTime(bestLapCache[number].lap_time),
   );
 
   customLog(bestLapCache[number]);
@@ -134,7 +134,7 @@ async function sendLapTime(number) {
         headers: {
           Authorization: `Bearer ${process.env.API_KEY}`,
         },
-      }
+      },
     );
     customLog("✅ [LapTime enregistré]");
     customLog(response.data);
@@ -245,6 +245,6 @@ function formatLapTime(ms) {
 
   return `${padded(minutes, 2)}.${padded(seconds, 2)}.${padded(
     milliseconds,
-    3
+    3,
   )}`;
 }
