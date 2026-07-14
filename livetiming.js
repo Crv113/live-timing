@@ -11,16 +11,18 @@ const allowedTypes = ["ENTRY", "LAP", "BESTLAP"];
 
 const bestLapCache = {};
 const eventCache = {};
+let playersOnlineCount = 0;
 
 if (IS_LOCAL) {
   // === Mode LOCAL : lecture depuis fichier ===
+  customLog("🔌 Mode LOCAL : lecture depuis fichier test.txt");
   const data = fs.readFileSync("test.txt", "utf-8");
 
   processData(data);
 } else {
   const SERVER_IP = "127.0.0.1";
   const SERVER_PORT = 54220;
-  const PASSWORD = "mxbTimingLiveClient";
+  const PASSWORD = process.env.SERVER_PASSWORD;
 
   const client = dgram.createSocket("udp4");
   gracefulShutdown(client);
@@ -50,6 +52,7 @@ if (IS_LOCAL) {
         keepAliveInterval = setInterval(() => {
           customLog("KEEPALIVE");
           send("KEEPALIVE");
+          sendServerStatus(playersOnlineCount);
         }, 15000);
       } else {
         console.error("❌ Connexion échouée :", firstLine);
@@ -121,25 +124,51 @@ async function sendLapTime(number) {
     "Send Api: " +
       number +
       " | newBestLap: " +
-      formatLapTime(bestLapCache[number].lap_time)
+      formatLapTime(bestLapCache[number].lap_time),
   );
 
   customLog(bestLapCache[number]);
 
   try {
     const response = await axios.post(
-      "https://api.mxbtiming.com/api/laptimes",
+      `${process.env.API_BASE_URL}/api/laptimes`,
       { ...bestLapCache[number], ...eventCache },
       {
         headers: {
           Authorization: `Bearer ${process.env.API_KEY}`,
         },
-      }
+      },
     );
     customLog("✅ [LapTime enregistré]");
     customLog(response.data);
   } catch (error) {
     console.error("❌ [Erreur envoi LapTime]");
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Erreur:", error.response.data);
+    } else {
+      console.error("Erreur:", error.message);
+    }
+  }
+}
+
+async function sendServerStatus(count) {
+  customLog("Send Api: players_online: " + count);
+
+  try {
+    const response = await axios.post(
+      `${process.env.API_BASE_URL}/api/server-status`,
+      { players_online: count },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.API_KEY}`,
+        },
+      },
+    );
+    customLog("✅ [ServerStatus enregistré]");
+    customLog(response.data);
+  } catch (error) {
+    console.error("❌ [Erreur envoi ServerStatus]");
     if (error.response) {
       console.error("Status:", error.response.status);
       console.error("Erreur:", error.response.data);
@@ -183,6 +212,18 @@ function processData(data) {
             bike_name: block[3],
             category_name: block[5],
           };
+
+          playersOnlineCount++;
+          sendServerStatus(playersOnlineCount);
+        }
+        break;
+
+      case "ENTRYREMOVE":
+        number = block[1];
+
+        if (bestLapCache[number]) {
+          playersOnlineCount = Math.max(0, playersOnlineCount - 1);
+          sendServerStatus(playersOnlineCount);
         }
         break;
 
@@ -245,6 +286,6 @@ function formatLapTime(ms) {
 
   return `${padded(minutes, 2)}.${padded(seconds, 2)}.${padded(
     milliseconds,
-    3
+    3,
   )}`;
 }
