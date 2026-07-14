@@ -181,6 +181,7 @@ function processData(data) {
   const blocks = splitDataIntoBlocks(data);
 
   blocks.forEach((block) => {
+    customLog("Processing block: " + block[0]);
     let number, lapTime;
     switch (block[0]) {
       case "EVENT":
