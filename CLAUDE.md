@@ -27,7 +27,8 @@ node livetiming.js       # lancement direct
 
 - `API_KEY` — token envoyé en `Authorization: Bearer` vers l'API `seek-and-stock` (middleware `VerifyApiKey`)
 - `SERVER_PASSWORD` — mot de passe de connexion au serveur dédié Mx Bikes
-- `LOCAL=1` — active le mode local : lit `test.txt` au lieu d'ouvrir une socket UDP, pratique pour tester `processData()` sans serveur de jeu
+- `API_BASE_URL` — base URL de l'API `seek-and-stock` cible (ex: `https://api.mxbtiming.com`), utilisée par `sendLapTime`/`sendServerStatus`. Pointer vers une instance locale pour tester sans écrire dans l'API de prod.
+- `LOCAL=1` — active le mode local : lit `test.txt` au lieu d'ouvrir une socket UDP, pratique pour tester `processData()` sans serveur de jeu. Ne change QUE la source des données reçues, pas la destination des POST — `API_BASE_URL` reste utilisée telle quelle, donc pointer vers une instance locale pour un test qui n'écrit pas en prod.
 
 ## Conventions non-obvieuses
 

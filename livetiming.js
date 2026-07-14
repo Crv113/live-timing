@@ -15,6 +15,7 @@ let playersOnlineCount = 0;
 
 if (IS_LOCAL) {
   // === Mode LOCAL : lecture depuis fichier ===
+  customLog("🔌 Mode LOCAL : lecture depuis fichier test.txt");
   const data = fs.readFileSync("test.txt", "utf-8");
 
   processData(data);
@@ -130,7 +131,7 @@ async function sendLapTime(number) {
 
   try {
     const response = await axios.post(
-      "https://api.mxbtiming.com/api/laptimes",
+      `${process.env.API_BASE_URL}/api/laptimes`,
       { ...bestLapCache[number], ...eventCache },
       {
         headers: {
@@ -156,7 +157,7 @@ async function sendServerStatus(count) {
 
   try {
     const response = await axios.post(
-      "https://api.mxbtiming.com/api/server-status",
+      `${process.env.API_BASE_URL}/api/server-status`,
       { players_online: count },
       {
         headers: {
