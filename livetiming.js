@@ -50,7 +50,7 @@ if (IS_LOCAL) {
         send("START\n0\n0");
 
         keepAliveInterval = setInterval(() => {
-          customLog("KEEPALIVE");
+          // customLog("KEEPALIVE");
           send("KEEPALIVE");
           sendServerStatus(playersOnlineCount);
         }, 15000);
@@ -183,6 +183,7 @@ function processData(data) {
 
   blocks.forEach((block) => {
     let number, lapTime;
+    customLog("Processing block: " + block[0]);
     switch (block[0]) {
       case "EVENT":
         const eventName = block[2];
