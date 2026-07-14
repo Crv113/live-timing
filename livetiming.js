@@ -213,6 +213,9 @@ function processData(data) {
           };
 
           playersOnlineCount++;
+          customLog(
+            "ENTRY: " + number + " | playersOnlineCount: " + playersOnlineCount,
+          );
           sendServerStatus(playersOnlineCount);
         }
         break;
@@ -222,6 +225,12 @@ function processData(data) {
 
         if (bestLapCache[number]) {
           playersOnlineCount = Math.max(0, playersOnlineCount - 1);
+          customLog(
+            "ENTRYREMOVE: " +
+              number +
+              " | playersOnlineCount: " +
+              playersOnlineCount,
+          );
           sendServerStatus(playersOnlineCount);
         }
         break;
